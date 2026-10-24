@@ -7,6 +7,9 @@ Projeto web para câmeras IP e transmissão de vídeo entre celulares autorizado
 - `camera.html`: ativa a câmera deste celular com permissão explícita e envia vídeo ao visualizador via WebRTC/PeerJS.
 - `viewer.html`: gera um código temporário para receber vídeo do transmissor.
 - `acesso-ip.html`: analisa sintaticamente um IPv4 e explica limitações do acesso remoto.
+- `conectar.html`: tela inicial de conta Firebase e cadastro dos aparelhos por nome.
+- `firebase-config.js`: modelo para configurar o app Web do Firebase.
+- `firestore.rules`: regras iniciais para limitar dados à conta autenticada.
 
 ## Publicar pelo GitHub Pages
 1. Abra **Settings → Pages** no repositório.
@@ -44,3 +47,15 @@ O arquivo `acesso-ip.html` é um diagnóstico local de formato/faixas de IP; nã
 - [WebRTC protocols: ICE, STUN e TURN (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Protocols)
 - [WebRTC — getting started with remote streams](https://webrtc.org/getting-started/remote-streams)
 - [RFC 8828 — WebRTC IP Address Handling Requirements](https://www.rfc-editor.org/rfc/rfc8828.html)
+
+
+## Configuração da conta e aparelhos
+
+1. Crie um projeto no [Firebase Console](https://console.firebase.google.com/).
+2. Adicione um aplicativo Web e copie a configuração para `firebase-config.js`. Não coloque senhas de servidor nesse arquivo.
+3. Em **Authentication → Sign-in method**, ative **E-mail/Senha**.
+4. Crie o banco **Cloud Firestore** e publique as regras de `firestore.rules` pela aba **Rules**.
+5. Publique novamente o site pelo GitHub Pages e abra `conectar.html`.
+6. Entre com a mesma conta nos dois celulares e registre cada um com um nome diferente.
+
+**Importante:** esta atualização entrega a base de conta e cadastro. A conexão de vídeo automática por nome ainda precisa ser integrada ao fluxo de sinalização WebRTC e configurada/testada com TURN para redes que não aceitam conexão direta. Não use regras abertas do Firestore em produção. Veja a documentação oficial sobre [segurança do Firestore](https://firebase.google.com/docs/firestore/security/overview).
