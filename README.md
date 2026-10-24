@@ -1,36 +1,46 @@
 # IP Cam Connect
 
-Projeto web para transmitir a câmera de um celular para outro aparelho pela internet, usando WebRTC e PeerJS.
+Projeto web para câmeras IP e transmissão de vídeo entre celulares autorizados.
 
 ## Páginas
-- `index.html`: painel principal e conexão com câmeras IP que oferecem streams compatíveis.
-- `camera.html`: ativa a câmera deste celular, com permissão explícita, e envia vídeo ao visualizador autorizado.
-- `viewer.html`: gera um código temporário para receber o vídeo.
+- `index.html`: painel principal para streams HTTP/HTTPS compatíveis (MJPEG/HLS/imagem).
+- `camera.html`: ativa a câmera deste celular com permissão explícita e envia vídeo ao visualizador via WebRTC/PeerJS.
+- `viewer.html`: gera um código temporário para receber vídeo do transmissor.
+- `acesso-ip.html`: analisa sintaticamente um IPv4 e explica limitações do acesso remoto.
 
 ## Publicar pelo GitHub Pages
 1. Abra **Settings → Pages** no repositório.
 2. Escolha **Deploy from a branch**, selecione `main` e `/(root)`, depois salve.
-3. Aguarde a publicação. As páginas ficarão disponíveis em `/camera.html` e `/viewer.html` no mesmo domínio.
+3. Aguarde a publicação. As páginas estarão no mesmo endereço do site, em `/camera.html`, `/viewer.html` e `/acesso-ip.html`.
 
-## Como usar entre dois celulares
-1. Publique o site e abra-o nos dois aparelhos usando HTTPS.
-2. No celular que vai receber o vídeo, abra `viewer.html` e aguarde aparecer o código temporário.
-3. Copie esse código e envie em privado para a pessoa que está com o celular transmissor.
-4. No celular que vai transmitir, abra `camera.html`, toque **Ativar câmera e gerar código** e autorize a câmera.
-5. Cole o código do visualizador no campo **Código do visualizador autorizado** e toque **Conectar e transmitir**.
-6. No fim, toque **Parar transmissão**. O visualizador pode também desconectar.
+## Como usar o protótipo WebRTC
+1. Abra `viewer.html` no aparelho que vai assistir e copie o código temporário gerado.
+2. No transmissor, abra `camera.html`, toque para ativar a câmera e conceda permissão.
+3. Cole o código do visualizador e toque em **Conectar e transmitir**.
+4. Encerre a transmissão no aparelho transmissor quando terminar.
+
+## Sobre “digitar somente o IP” através da internet móvel
+O protótipo atual **não permite** ligar um celular remoto somente digitando o IP público. Não afirmamos que isso funcione, porque:
+- O IP local (por exemplo, `192.168.x.x`) só é roteável na rede local ou numa VPN conectada.
+- Muitas operadoras móveis usam CGNAT e firewalls, que bloqueiam conexões de entrada para o aparelho.
+- Uma página web no celular não abre uma porta TCP/UDP para atuar como servidor de vídeo. A câmera web atual envia mídia por WebRTC, que usa sinalização para estabelecer a sessão.
+- Mesmo um IP público não basta sem um endpoint de vídeo ativo, porta roteável e regras de firewall adequadas.
+
+### Arquitetura viável
+**Opção A — mais prática em redes móveis:** manter WebRTC, adicionar contas/autenticação e pareamento por nome de dispositivo, além de um serviço de sinalização próprio e um servidor TURN confiável com credenciais temporárias. O usuário poderá selecionar um dispositivo pareado sem digitar códigos em cada conexão. TURN retransmite mídia quando a conexão direta falha e pode gerar custos de banda.
+
+**Opção B — IP como destino:** instalar um aplicativo Android nativo que atue como serviço de transmissão, com autenticação, e conectar os dois celulares por uma VPN privada com IPs estáveis. O visualizador usa o IP VPN do transmissor. Um IP público direto só é uma alternativa se a rede fornecer endereço roteável e permitir a porta necessária; não é garantido por operadoras móveis.
+
+O arquivo `acesso-ip.html` é um diagnóstico local de formato/faixas de IP; não testa acessibilidade real e não transmite vídeo. Para dispensar códigos manuais com segurança, a próxima etapa recomendada é autenticação e pareamento de dispositivos, não usar um IP público como identidade.
 
 ## Segurança e limitações
-- O vídeo só começa após ação visível para ativar a câmera e conceder permissão. O navegador exibe indicadores de câmera; mantenha a página aberta.
-- O transmissor inicia a chamada para o código de visualizador fornecido, reduzindo chamadas não solicitadas. Compartilhe o código de visualização apenas com a pessoa autorizada.
-- PeerJS Cloud é usado como serviço de sinalização. A mídia usa WebRTC criptografado e normalmente vai diretamente entre os aparelhos; o serviço de sinalização não é um sistema de contas ou autenticação. Para uso sensível/produção, recomenda-se um PeerServer próprio, autenticação e TURN controlado por você.
-- A conexão pode falhar em algumas operadoras móveis ou redes com NAT restritivo. Nesse caso, é necessário configurar um servidor TURN confiável com credenciais temporárias. Não há garantia de conexão em toda rede móvel.
-- A câmera do navegador requer HTTPS ou contexto seguro, permissão explícita e página aberta. Funcionamento em segundo plano não é garantido por navegadores móveis.
-- Ambos os aparelhos precisam de internet. Não é preciso expor uma porta de câmera residencial nem usar o IP local do celular.
-- Este protótipo não grava nem armazena vídeo. Use somente dispositivos e ambientes para os quais você tem autorização.
-- A biblioteca PeerJS é carregada de CDN; se a biblioteca ou o serviço de sinalização estiver indisponível, a conexão não iniciará.
+- Câmera inicia apenas após ação visível e permissão do usuário; mantenha a página aberta. Navegadores móveis não garantem execução em segundo plano.
+- PeerJS Cloud é usado como sinalização no protótipo atual; não é autenticação de usuários. Para uso sensível/produção, implemente contas, autorização, servidor de sinalização próprio e TURN controlado por você.
+- WebRTC usa mídia criptografada, mas conectividade depende de ICE/STUN/TURN, firewall, NAT e qualidade da rede. Algumas operadoras podem não conectar sem TURN.
+- Não grava nem armazena vídeo. Use apenas aparelhos e ambientes para os quais você tem autorização.
+- O projeto carrega a biblioteca PeerJS por CDN; sem acesso à biblioteca ou ao serviço de sinalização, a conexão não inicia.
 
-## Referências técnicas
-- [PeerJS — início rápido](https://peerjs.com/client/getting-started)
-- [PeerJS — FAQ e TURN](https://peerjs.com/client/faq)
-- [PeerJS — API de Peer](https://peerjs.com/client/api/peer)
+## Referências
+- [WebRTC protocols: ICE, STUN e TURN (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Protocols)
+- [WebRTC — getting started with remote streams](https://webrtc.org/getting-started/remote-streams)
+- [RFC 8828 — WebRTC IP Address Handling Requirements](https://www.rfc-editor.org/rfc/rfc8828.html)
