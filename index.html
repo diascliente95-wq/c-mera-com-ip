@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<meta name="description" content="Painel para conectar a câmeras IP autorizadas pela rede ou por acesso remoto seguro.">
+<title>IP Cam Connect</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#101f32;--line:#21344b;--muted:#9eb0c7;--cyan:#36d7e7;--green:#45dfaa;--danger:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#132945 0,#07111f 60%);color:#f4f8ff;font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+header{padding:24px 18px 18px;max-width:1100px;margin:auto;display:flex;gap:14px;align-items:center}.logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),#5376ff);color:#06111c;font-size:25px;font-weight:900}h1{margin:0;font-size:clamp(22px,5vw,30px)}.sub{color:var(--muted);margin:4px 0 0;font-size:14px}
+main{max-width:1100px;margin:auto;padding:0 16px 38px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr);gap:16px}.card{background:linear-gradient(160deg,#12243a,#0c1929);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 12px 32px #0002}.card h2{font-size:18px;margin:0 0 14px}.screen{background:#02060b;border:1px solid #26394e;border-radius:14px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}.screen video,.screen img,.screen iframe{width:100%;height:100%;object-fit:contain;border:0}.placeholder{text-align:center;color:var(--muted);padding:24px}.cam-icon{font-size:48px;display:block;margin-bottom:12px}.status{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:13px 0}.dot{width:9px;height:9px;border-radius:50%;background:#718096}.dot.ok{background:var(--green);box-shadow:0 0 12px #45dfaa80}.dot.err{background:var(--danger)}label{font-size:13px;color:#c9d6e7;display:block;margin:13px 0 6px}input,select{width:100%;padding:12px 13px;border:1px solid #324862;background:#081421;color:#f4f8ff;border-radius:11px;font:inherit;min-width:0}input:focus,select:focus{outline:2px solid #36d7e780;border-color:var(--cyan)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.btn{border:0;border-radius:11px;padding:12px 15px;font-weight:750;font-size:14px;background:var(--cyan);color:#06121f;cursor:pointer}.btn.secondary{background:#1a3048;color:#eef7ff;border:1px solid #344c67}.btn.danger{background:#421e2a;color:#ffdce0;border:1px solid #713443}.btn:active{transform:scale(.98)}.note{font-size:13px;color:var(--muted);margin:10px 0 0}.warning{background:#2d2818;border:1px solid #62502a;color:#ffe8b3;padding:12px;border-radius:12px;font-size:13px;margin-top:14px}.saved{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.saved button{background:#16283d;color:#edf6ff;border:1px solid #314862;border-radius:9px;padding:9px 11px;cursor:pointer}.help{margin-top:16px}.help p{color:var(--muted);font-size:14px;margin:8px 0}.footer{color:#7f93ad;font-size:12px;text-align:center;padding:12px 18px 24px}
+@media(max-width:760px){main{grid-template-columns:1fr}.card{padding:15px}header{padding-top:18px}.grid2{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="logo" aria-hidden="true">◉</div><div><h1>IP Cam Connect</h1><p class="sub">Visualização de câmeras IP • Painel móvel</p></div></header>
+<main>
+<section class="card">
+<h2>Visualização</h2>
+<div class="screen" id="screen"><div class="placeholder"><span class="cam-icon">📹</span><strong>Nenhuma câmera conectada</strong><p class="note">Insira o endereço de uma câmera que você administra.</p></div></div>
+<div class="status"><span class="dot" id="dot"></span><span id="status" role="status" aria-live="polite">Aguardando endereço da câmera</span></div>
+<div class="btns"><button class="btn secondary" id="fullscreen">⛶ Tela cheia</button><button class="btn secondary" id="stop">Desconectar</button></div>
+<div class="warning">Acesso remoto exige configuração compatível no equipamento ou acesso por VPN/rede segura. Não exponha a câmera diretamente à internet nem compartilhe senhas ou links privados.</div>
+</section>
+<aside class="card">
+<h2>Conectar câmera</h2>
+<form id="camform">
+<label for="name">Nome da câmera</label><input id="name" maxlength="60" placeholder="Ex.: Entrada da casa" value="Minha câmera">
+<label for="url">Endereço IP ou URL de vídeo</label><input id="url" required placeholder="http://192.168.1.50:8080/video" autocomplete="url" autocapitalize="none" spellcheck="false">
+<div class="grid2"><div><label for="kind">Tipo de transmissão</label><select id="kind"><option value="auto">Detectar / URL compatível</option><option value="mjpeg">MJPEG (imagem ao vivo)</option><option value="hls">HLS (.m3u8)</option><option value="image">Imagem atual (JPEG/PNG)</option></select></div><div><label for="refresh">Atualizar imagem</label><select id="refresh"><option value="2">A cada 2 s</option><option value="5" selected>A cada 5 s</option><option value="10">A cada 10 s</option></select></div></div>
+<div class="btns"><button class="btn" type="submit">Conectar</button><button class="btn secondary" type="button" id="save">Salvar câmera</button></div>
+</form>
+<p class="note">O navegador não consegue acessar qualquer IP automaticamente. O dispositivo precisa fornecer um fluxo compatível e aceitar conexões do navegador.</p>
+<h2 style="margin-top:22px">Câmeras salvas</h2><div id="saved" class="saved"><span class="note">Nenhuma câmera salva neste aparelho.</span></div>
+<div class="help"><h2>Como funciona à distância</h2><p>• <b>Na mesma rede:</b> use o IP local da câmera.</p><p>• <b>Fora de casa:</b> prefira VPN (por exemplo, uma VPN configurada nos dois lados) ou o serviço remoto seguro do fabricante.</p><p>• <b>RTSP:</b> muitos navegadores não reproduzem RTSP diretamente; é necessário um gateway que converta o fluxo para HLS/WebRTC.</p><p>• <b>HTTPS:</b> uma página HTTPS pode bloquear fluxos HTTP por conteúdo misto. Use HTTPS válido no fluxo ou uma origem segura.</p></div>
+</aside>
+</main>
+<div class="footer">Use somente câmeras e redes para as quais você tem autorização. As configurações salvas ficam neste navegador.</div>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ let timer=null, currentObjectUrl=null;
+ const STORE='ipcam-connect-cameras-v1';
+ function setStatus(msg,type=''){ $('status').textContent=msg;$('dot').className='dot'+(type?' '+type:'');}
+ function current(){return {name:$('name').value.trim()||'Câmera',url:$('url').value.trim(),kind:$('kind').value,refresh:$('refresh').value};}
+ function validUrl(raw){try{const u=new URL(raw);return ['http:','https:'].includes(u.protocol);}catch(e){return false;}}
+ function clean(){if(timer){clearInterval(timer);timer=null;}if(currentObjectUrl){URL.revokeObjectURL(currentObjectUrl);currentObjectUrl=null;}}
+ function showPlaceholder(msg){$('screen').innerHTML='<div class="placeholder"><span class="cam-icon">📹</span><strong></strong><p class="note"></p></div>';$('screen').querySelector('strong').textContent=msg;$('screen').querySelector('p').textContent='Verifique o IP, o tipo de fluxo e as permissões da câmera.';}
+ function connect(c){
+  clean();
+  if(!c.url||!validUrl(c.url)){setStatus('Informe um endereço HTTP ou HTTPS válido.','err');return;}
+  $('name').value=c.name;$('url').value=c.url;$('kind').value=c.kind||'auto';$('refresh').value=c.refresh||'5';
+  const kind=c.kind||'auto',screen=$('screen'); screen.replaceChildren();
+  if(kind==='hls'||(/\.m3u8(?:$|\?)/i.test(c.url))){
+   const v=document.createElement('video');v.controls=true;v.autoplay=true;v.playsInline=true;v.src=c.url;screen.append(v);
+   v.addEventListener('loadeddata',()=>setStatus('Fluxo HLS carregado.','ok'));
+   v.addEventListener('error',()=>setStatus('Não foi possível abrir HLS. Este navegador pode exigir suporte HLS ou um gateway compatível.','err'));
+   setStatus('Tentando abrir fluxo HLS…');return;
+  }
+  if(kind==='image'){
+   const im=document.createElement('img');im.alt='Imagem da câmera';im.src=c.url;screen.append(im);
+   im.addEventListener('load',()=>setStatus('Imagem carregada.','ok'));im.addEventListener('error',()=>setStatus('Não foi possível carregar a imagem. Verifique endereço e acesso.','err'));return;
+  }
+  const im=document.createElement('img');im.alt='Transmissão da câmera';im.referrerPolicy='no-referrer';im.src=c.url;screen.append(im);
+  let loaded=false;im.addEventListener('load',()=>{loaded=true;setStatus('Recebendo imagem da câmera.','ok');});
+  im.addEventListener('error',()=>{setStatus('Sem imagem. Verifique se a URL entrega MJPEG/JPEG e permite acesso do navegador.','err');});
+  if(kind==='mjpeg'||kind==='auto'){
+   timer=setInterval(()=>{if(!loaded||kind!=='auto')return;/* MJPEG updates itself; do not reload a live MJPEG stream. */},Number(c.refresh||5)*1000);
+  }
+  setStatus('Tentando conectar…');
+ }
+ function readSaved(){try{return JSON.parse(localStorage.getItem(STORE)||'[]').filter(x=>x&&typeof x.url==='string');}catch(e){return [];}}
+ function writeSaved(list){localStorage.setItem(STORE,JSON.stringify(list));renderSaved();}
+ function renderSaved(){const list=readSaved(),el=$('saved');el.replaceChildren();if(!list.length){const s=document.createElement('span');s.className='note';s.textContent='Nenhuma câmera salva neste aparelho.';el.append(s);return;}
+  list.forEach((c,i)=>{const wrap=document.createElement('div');wrap.style.display='flex';wrap.style.gap='5px';const b=document.createElement('button');b.textContent=c.name;b.onclick=()=>connect(c);const d=document.createElement('button');d.textContent='×';d.setAttribute('aria-label','Excluir '+c.name);d.onclick=()=>{const l=readSaved();l.splice(i,1);writeSaved(l);};wrap.append(b,d);el.append(wrap);});
+ }
+ $('camform').addEventListener('submit',e=>{e.preventDefault();connect(current());});
+ $('save').addEventListener('click',()=>{const c=current();if(!c.url||!validUrl(c.url)){setStatus('Digite um endereço HTTP/HTTPS válido antes de salvar.','err');return;}const list=readSaved().filter(x=>x.url!==c.url);list.unshift(c);writeSaved(list.slice(0,12));setStatus('Câmera salva neste navegador.','ok');});
+ $('stop').addEventListener('click',()=>{clean();showPlaceholder('Câmera desconectada');setStatus('Desconectado.');});
+ $('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('screen').requestFullscreen();}catch(e){setStatus('Tela cheia não disponível neste navegador.','err');}});
+ renderSaved();
+})();
+</script>
+</body>
+</html>
