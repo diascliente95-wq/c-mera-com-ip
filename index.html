@@ -24,6 +24,7 @@ main{max-width:1100px;margin:auto;padding:0 16px 38px;display:grid;grid-template
 <div class="status"><span class="dot" id="dot"></span><span id="status" role="status" aria-live="polite">Aguardando endereço da câmera</span></div>
 <div class="btns"><button class="btn secondary" id="fullscreen">⛶ Tela cheia</button><button class="btn secondary" id="stop">Desconectar</button></div>
 <div class="warning">Acesso remoto exige configuração compatível no equipamento ou acesso por VPN/rede segura. Não exponha a câmera diretamente à internet nem compartilhe senhas ou links privados.</div>
+<div class="warning" style="margin-top:10px"><strong>Celular como câmera por IP remoto:</strong> digitar o IP público do celular normalmente não basta. Operadoras móveis costumam usar CGNAT e o navegador não pode abrir uma porta de servidor no celular. Para acesso seguro sem códigos manuais, é necessário um serviço de conexão autenticado (sinalização + WebRTC/TURN) ou uma VPN entre os aparelhos. Veja <a href="./acesso-ip.html" style="color:#ffe8b3;text-decoration:underline">as opções de acesso por IP</a>.</div>
 </section>
 <aside class="card">
 <h2>Conectar câmera</h2>
