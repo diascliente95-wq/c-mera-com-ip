@@ -1,8 +1,10 @@
-// Copie os dados do seu app Web no Firebase Console e substitua os valores abaixo.
-// A configuração web do Firebase é pública por natureza; proteja os dados com Authentication e Rules.
+// Configuração do app Web Firebase: camera-ip-7f3f3
+// A configuração web é pública por natureza; mantenha Authentication e Firestore Rules seguros.
 export const firebaseConfig = {
-  apiKey: "COLOQUE_SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJECT_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyAvRcX9htb6CM6eOle7MZxISdndDr8Q1QQ",
+  authDomain: "camera-ip-7f3f3.firebaseapp.com",
+  projectId: "camera-ip-7f3f3",
+  storageBucket: "camera-ip-7f3f3.firebasestorage.app",
+  messagingSenderId: "255643063824",
+  appId: "1:255643063824:web:350722dd962dee1ba89c95"
 };
