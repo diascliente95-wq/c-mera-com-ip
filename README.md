@@ -1,25 +1,35 @@
 # IP Cam Connect
 
-Painel web responsivo para visualizar streams de câmeras IP autorizadas.
+Projeto web para transmitir a câmera de um celular para outro aparelho pela internet, usando WebRTC e PeerJS.
 
-## Recursos iniciais
-- Conexão por URL HTTP/HTTPS compatível com o navegador.
-- Modos para MJPEG, HLS e imagem estática.
-- Lista local de câmeras salvas no navegador.
-- Tela cheia e mensagens de status.
-
-## Limitações importantes
-- Isso é uma interface web, não um aplicativo Android nativo.
-- IP local (ex.: 192.168.x.x) normalmente só funciona dentro da mesma rede ou por VPN.
-- Acesso remoto exige configuração no roteador, VPN ou serviço seguro do fabricante; prefira VPN e evite expor a câmera diretamente à internet.
-- RTSP não é reproduzido diretamente pela maioria dos navegadores. Para RTSP, configure um gateway que converta para WebRTC/HLS.
-- HTTPS pode bloquear URLs de vídeo HTTP por conteúdo misto. O fluxo também precisa permitir acesso do navegador e, quando aplicável, CORS.
-- A página não descobre IPs nem tenta contornar login ou permissões. Use apenas câmeras que você administra ou tem autorização para acessar.
+## Páginas
+- `index.html`: painel principal e conexão com câmeras IP que oferecem streams compatíveis.
+- `camera.html`: transforma este celular em transmissor de câmera, mediante permissão explícita.
+- `viewer.html`: visualiza o fluxo usando o código temporário do transmissor.
 
 ## Publicar pelo GitHub Pages
-1. Abra Settings no repositório.
-2. Em Pages, escolha Deploy from a branch.
-3. Selecione `main` e `/ (root)`, depois Save.
-4. Aguarde a publicação e abra o endereço indicado pelo GitHub Pages.
+1. Abra **Settings → Pages** no repositório.
+2. Escolha **Deploy from a branch**, selecione `main` e `/(root)`, depois salve.
+3. Aguarde a publicação. As páginas ficarão disponíveis em `/camera.html` e `/viewer.html` no mesmo domínio.
 
-Para converter em aplicativo Android, uma etapa futura pode empacotar o site em uma aplicação nativa/PWA, mas o suporte a streams dependerá da câmera e da rede.
+## Como usar
+1. Publique o site e abra-o em ambos os celulares por HTTPS.
+2. No celular que vai funcionar como câmera, abra `camera.html`, toque **Ativar câmera e gerar código** e permita o acesso solicitado pelo navegador.
+3. Envie o código temporário em privado para o outro aparelho.
+4. No segundo celular, abra `viewer.html`, informe o código e toque **Conectar e assistir**.
+5. Para terminar, toque **Parar transmissão** no aparelho transmissor e **Desconectar** no visualizador.
+
+## Segurança e limitações
+- O vídeo só começa após uma ação visível do usuário para ativar a câmera e conceder permissão. O navegador exibe os indicadores de câmera; mantenha a página aberta.
+- O código do PeerJS é temporário e deve ser compartilhado apenas com pessoas autorizadas. Não publique o código.
+- PeerJS Cloud é usado como serviço de sinalização. A mídia usa WebRTC criptografado e normalmente vai diretamente entre os aparelhos; o serviço de sinalização não é um sistema de contas ou autenticação. Para uso sensível/produção, recomenda-se um PeerServer próprio, autenticação e TURN controlado por você.
+- A conexão pode falhar em algumas operadoras móveis ou redes com NAT restritivo. Nesse caso, é necessário configurar um servidor TURN confiável com credenciais temporárias. Não há garantia de conexão em toda rede móvel.
+- A câmera do navegador requer HTTPS ou contexto seguro, permissão explícita e página aberta. O funcionamento em segundo plano não é garantido por navegadores móveis.
+- O acesso remoto exige internet nos dois aparelhos. Não é preciso expor uma porta de câmera residencial nem usar o IP local do celular.
+- Não há gravação nem armazenamento de vídeo neste protótipo. Use somente dispositivos e ambientes para os quais você tem autorização.
+- A biblioteca PeerJS é carregada de CDN; se a biblioteca ou o serviço de sinalização estiver indisponível, a conexão não iniciará.
+
+## Referências técnicas
+- [PeerJS — início rápido](https://peerjs.com/client/getting-started)
+- [PeerJS — FAQ e TURN](https://peerjs.com/client/faq)
+- [PeerJS — API de Peer](https://peerjs.com/client/api/peer)
