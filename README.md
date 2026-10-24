@@ -7,7 +7,7 @@ Projeto web para câmeras IP e transmissão de vídeo entre celulares autorizado
 - `camera.html`: ativa a câmera deste celular com permissão explícita e envia vídeo ao visualizador via WebRTC/PeerJS.
 - `viewer.html`: gera um código temporário para receber vídeo do transmissor.
 - `acesso-ip.html`: analisa sintaticamente um IPv4 e explica limitações do acesso remoto.
-- `conectar.html`: tela inicial de conta Firebase e cadastro dos aparelhos por nome.
+- `conectar.html`: login Firebase, cadastro por nome e protótipo de chamada WebRTC entre aparelhos da mesma conta.
 - `firebase-config.js`: modelo para configurar o app Web do Firebase.
 - `firestore.rules`: regras iniciais para limitar dados à conta autenticada.
 
@@ -58,4 +58,4 @@ O arquivo `acesso-ip.html` é um diagnóstico local de formato/faixas de IP; nã
 5. Publique novamente o site pelo GitHub Pages e abra `conectar.html`.
 6. Entre com a mesma conta nos dois celulares e registre cada um com um nome diferente.
 
-**Importante:** esta atualização entrega a base de conta e cadastro. A conexão de vídeo automática por nome ainda precisa ser integrada ao fluxo de sinalização WebRTC e configurada/testada com TURN para redes que não aceitam conexão direta. Não use regras abertas do Firestore em produção. Veja a documentação oficial sobre [segurança do Firestore](https://firebase.google.com/docs/firestore/security/overview).
+**Importante:** `conectar.html` já inclui um fluxo inicial de chamada WebRTC por nome usando PeerJS para sinalização. Ainda é um protótipo: não foi testado em dois celulares reais, a configuração TURN não está incluída e certas redes móveis podem bloquear a conexão direta. Use regras restritas do Firestore e teste somente com aparelhos autorizados. Veja a documentação oficial sobre [segurança do Firestore](https://firebase.google.com/docs/firestore/security/overview).
